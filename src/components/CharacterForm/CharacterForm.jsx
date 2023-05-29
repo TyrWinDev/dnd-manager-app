@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import supabase from '../../supabase';
 import { v4 as uuidv4 } from 'uuid';
+import StatInput from '../StatInput/StatInput';
 
 const CharacterForm = () => {
     const [name, setName] = useState('');
@@ -14,6 +15,63 @@ const CharacterForm = () => {
     const [intelligence, setIntelligence] = useState(0);
     const [wisdom, setWisdom] = useState(0);
     const [charisma, setCharisma] = useState(0);
+    const [apiClass, setApiClass] = useState([]);
+    const [apiRace, setApiRace] = useState([]);
+    const [selectedClass, setSelectedClass] = useState(null);
+    const [selectedRace, setSelectedRace] = useState(null);
+
+    useEffect(() => {
+
+        //Classes
+        fetch('https://api.open5e.com/classes/')
+        .then(response => response.json())
+        .then(data => {
+          const apiClasses = data.results.map(classItem => ({
+            id: classItem.slug,
+            name: classItem.name,
+            description: classItem.desc,
+            hitDice: classItem.hit_dice,
+            hpAtFirstLevel: classItem.hp_at_1st_level,
+            hpAtHigherLevels: classItem.hp_at_higher_levels,
+            profArmor: classItem.prof_armor,
+            profWeapons: classItem.prof_weapons,
+            profTools: classItem.prof_tools,
+            profSavingThrows: classItem.prof_saving_throws,
+            profSkills: classItem.prof_skills,
+            equipment: classItem.equipment,
+            //Archetypes to be added in the future
+          }));
+          setApiClass(apiClasses);
+        })
+        .catch(error => {
+          console.error('Failed to fetch class types:', error);
+        });
+
+        //Races
+        fetch('https://api.open5e.com/races/')
+        .then(response => response.json())
+        .then(data => {
+          const apiRaces = data.results.map(raceItem => ({
+            id: raceItem.slug,
+            name: raceItem.name,
+            description: raceItem.desc,
+            asiDescription: raceItem.asi_desc,
+            age: raceItem.age,
+            alignment: raceItem.alignment,
+            size: raceItem.size,
+            speed: raceItem.speed_desc,
+            languages: raceItem.languages,
+            vision: raceItem.vision,
+            //Subraces to be added in the future
+          }));
+          setApiRace(apiRaces);
+        })
+        .catch(error => {
+          console.error('Failed to fetch races:', error);
+        });
+      }, []);
+      
+      
   
     const handleSubmit = async (event) => {
       event.preventDefault();
@@ -72,35 +130,100 @@ console.log(characterId); // Check the generated UUID value in the console
         console.error('Error:', error);
       }
     };
+
+    const handleClassChange = (event) => {
+        const selectedClass = event.target.value;
+        setClassType(selectedClass);
+      };
+
+    const handleRaceChange = (event) => {
+        const selectedRace = event.target.value;
+        setRace(selectedRace);
+     }
+
+     useEffect(() => {
+       const selectedClass = apiClass.find((classItem) => classItem.id === classType);
+       setSelectedClass(selectedClass);
+     }, [apiClass, classType]);
+     
+
+     useEffect(() => {
+        const selectedRace = apiRace.find((raceItem) => raceItem.id === race);
+        setSelectedRace(selectedRace);
+     }, [apiRace, race]);
+    
   
     return (
-      <form onSubmit={handleSubmit}>
-        <label>
+    <form onSubmit={handleSubmit} className="mt-4">
+        {console.log(selectedClass)}
+        <label className="block mb-2">
           Name:
           <input
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
+          type="text"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          className="border border-gray-300 p-2 w-full mt-1"
+        />
         </label>
         <br />
         <label>
-          Class:
-          <input
-            type="text"
-            value={classType}
-            onChange={(event) => setClassType(event.target.value)}
-          />
+        Class:
+        <select value={classType} onChange={handleClassChange}>
+            <option value="">Select Class</option>
+            {Array.isArray(apiClass) &&
+            apiClass.map((classItem, index) => (
+                <option key={index} value={classItem.id}>
+                {classItem.name}
+                </option>
+            ))}
+        </select>
         </label>
+        {selectedClass && 
+        <div>
+            <label>Class Description</label>
+            <p>{selectedClass.description}</p>
+            <ul>
+                <li>Hit dice: {selectedClass.hitDice}</li>
+                <li>HP at 1st level: {selectedClass.hpAtFirstLevel}</li>
+                <li>HP at higher levels: {selectedClass.hpAtHigherLevels}</li>
+                <li>Armor proficiency: {selectedClass.profArmor}</li>
+                <li>Weapon proficiency: {selectedClass.profWeapons}</li>
+                <li>Tools proficiency: {selectedClass.profTools}</li>
+                <li>Saving Throws proficiency: {selectedClass.profSavingThrows}</li>
+                <li>Skills proficiency: {selectedClass.profSkills}</li>
+                <li>Equipment: {selectedClass.equipment}</li>
+            </ul>
+        </div>
+        }
         <br />
         <label>
           Race:
-          <input
-            type="text"
-            value={race}
-            onChange={(event) => setRace(event.target.value)}
-          />
+          <select value={race} onChange={handleRaceChange}>
+            <option value="">Select Race</option>
+            {Array.isArray(apiRace) &&
+                apiRace.map((raceItem) => (
+                <option key={raceItem.id} value={raceItem.id}>
+                    {raceItem.name}
+                </option>
+                ))}
+            </select>
+
         </label>
+        {selectedRace && 
+        <div>
+            <label>Race Description</label>
+            <p>{selectedRace.description}</p>
+            <ul>
+                <li>{selectedRace.asiDescription}</li>
+                <li>{selectedRace.age}</li>
+                <li>{selectedRace.alignment}</li>
+                <li>{selectedRace.size}</li>
+                <li>{selectedRace.speed}</li>
+                <li>{selectedRace.languages}</li>
+                <li>{selectedRace.vision}</li>
+            </ul>
+        </div>
+        }
         <br />
         <label>
           Level:
@@ -109,6 +232,7 @@ console.log(characterId); // Check the generated UUID value in the console
             value={level}
             onChange={(event) => setLevel(parseInt(event.target.value))}
           />
+
         </label>
         <br />
         <label>
@@ -120,61 +244,49 @@ console.log(characterId); // Check the generated UUID value in the console
           />
         </label>
         <br />
-        <label>
-          Strength:
-          <input
-            type="number"
+        <div className='stats-container'>
+            <StatInput
+            label="Strength"
             value={strength}
-            onChange={(event) => setStrength(parseInt(event.target.value))}
-          />
-        </label>
+            onChange={setStrength}
+            />
         <br />
-        <label>
-          Dexterity:
-          <input
-            type="number"
+            <StatInput
+            label="Dexterity"
             value={dexterity}
-            onChange={(event) => setDexterity(parseInt(event.target.value))}
-          />
-        </label>
+            onChange={setDexterity}
+            />
         <br />
-        <label>
-          Constitution:
-          <input
-            type="number"
+             <StatInput
+            label="Constitution"
             value={constitution}
-            onChange={(event) => setConstitution(parseInt(event.target.value))}
-          />
-        </label>
+            onChange={setConstitution}
+            />
         <br />
-        <label>
-          Intelligence:
-          <input
-            type="number"
+            <StatInput
+            label="Intelligence"
             value={intelligence}
-            onChange={(event) => setIntelligence(parseInt(event.target.value))}
-          />
-        </label>
+            onChange={setIntelligence}
+            />
         <br />
-        <label>
-          Wisdom:
-          <input
-            type="number"
+           <StatInput
+            label="Wisdom"
             value={wisdom}
-            onChange={(event) => setWisdom(parseInt(event.target.value))}
-          />
-        </label>
+            onChange={setWisdom}
+            />
         <br />
-        <label>
-          Charisma:
-          <input
-            type="number"
+          <StatInput
+            label="Charisma"
             value={charisma}
-            onChange={(event) => setCharisma(parseInt(event.target.value))}
-          />
-        </label>
+            onChange={setCharisma}
+            />
+        </div>
+        
         <br />
-        <button type="submit">Create Character</button>
+        <button
+        type="submit"
+        className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 mt-4 rounded"
+      >Create Character</button>
       </form>
     );
 }
