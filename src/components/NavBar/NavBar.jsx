@@ -116,11 +116,6 @@ const Navbar = () => {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/edit-character/:id" activeClassName="active">
-            Edit Character
-          </NavLink>
-        </li>
-        <li>
           <NavLink to="/initiative-tracker" activeClassName="active">
             Initiative Tracker
           </NavLink>
@@ -139,6 +134,9 @@ const Navbar = () => {
           <NavLink to="/login" activeClassName="active">
             Login
           </NavLink>
+        </li>
+        <li>
+            <button>Sign In</button>
         </li>
       </ul>
     </nav>

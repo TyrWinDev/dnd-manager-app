@@ -23,7 +23,7 @@ const AppRoutes = () => {
       <Route path="/auth" element={<Auth />} />
       <Route path="/login" element={<Login />} />
       <Route path="/characters" element={<Characters />} />
-      <Route path="/character-sheet/:id" element={<CharacterSheet />} />
+      <Route path="/characters/:characterId" element={<CharacterSheet />} />
       <Route path="/combat-tracker" element={<CombatTracker />} />
       <Route path="/create/*" element={<CreateRoutes />} />
       <Route path="/dice-roller" element={<DiceRoller />} />
@@ -53,14 +53,14 @@ const CreateRoutes = () => {
   const EditRoutes = () => {
     return (
       <Routes>
-        <Route path="/character" element={<EditCharacter />} />
-        <Route path="/monster" element={<EditMonster />} />
-        <Route path="/spell" element={<EditSpell />} />
-        <Route path="/armor" element={<EditArmor />} />
-        <Route path="/weapon" element={<EditWeapon />} />
-        <Route path="/item" element={<EditItem />} />
-        <Route path="/npc" element={<EditNPC />} />
-        <Route path="/quest" element={<EditQuest />} />
+        <Route path="/character/:id" element={<EditCharacter />} />
+        <Route path="/monster/:id" element={<EditMonster />} />
+        <Route path="/spell/:id" element={<EditSpell />} />
+        <Route path="/armor/:id" element={<EditArmor />} />
+        <Route path="/weapon/:id" element={<EditWeapon />} />
+        <Route path="/item/:id" element={<EditItem />} />
+        <Route path="/npc/:id" element={<EditNPC />} />
+        <Route path="/quest/:id" element={<EditQuest />} />
       </Routes>
     );
   }

@@ -155,7 +155,6 @@ console.log(characterId); // Check the generated UUID value in the console
   
     return (
     <form onSubmit={handleSubmit} className="mt-4">
-        {console.log(selectedClass)}
         <label className="block mb-2">
           Name:
           <input
@@ -181,7 +180,7 @@ console.log(characterId); // Check the generated UUID value in the console
         {selectedClass && 
         <div>
             <label>Class Description</label>
-            <p>{selectedClass.description}</p>
+            {/* <p>{selectedClass.description}</p>
             <ul>
                 <li>Hit dice: {selectedClass.hitDice}</li>
                 <li>HP at 1st level: {selectedClass.hpAtFirstLevel}</li>
@@ -192,7 +191,7 @@ console.log(characterId); // Check the generated UUID value in the console
                 <li>Saving Throws proficiency: {selectedClass.profSavingThrows}</li>
                 <li>Skills proficiency: {selectedClass.profSkills}</li>
                 <li>Equipment: {selectedClass.equipment}</li>
-            </ul>
+            </ul> */}
         </div>
         }
         <br />
